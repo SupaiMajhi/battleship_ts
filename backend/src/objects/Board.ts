@@ -1,21 +1,16 @@
 import Ship from "./Ship.js";
 import Cell from "./Cell.js";
 
-import type { Position } from "../types.js";
-
-interface Coordinate {
-    start: { x: number, y: number },
-    end: { x: number, y: number },
-}
+import type { Position, Coordinates } from "../types.js";
 
 class Board {
     grid: Cell[][];
-    ships: Ship[];
-    missed: number[];
+    ships: Map<string, Ship>;
+    missed: Coordinates[];
 
     constructor(size: number){
         this.grid = this.createBoard(size);
-        this.ships = [];
+        this.ships = new Map();
         this.missed = [];
     }
 
@@ -25,30 +20,24 @@ class Board {
         for(let i=0; i < size; i++){
             const row: Cell[] = [];
             for(let j=0; j < size; j++){
-                row[i] = new Cell({ x: i, y: j });
+                row[j] = new Cell({ x: i, y: j });
             }
             grid[i] = row;
         }
         return grid;
     } 
 
-    private isValidCell(x: number, y: number){
-        if(x >= 0 && x < 10 && y >= 0 && y < 10){
+    private checkBound(position: Position){
+        if(position.start.x >= 0 && position.start.y < 10 && position.end.x >= 0 && position.end.y < 10){
             return true;
-        }else {
-            return false;
+        }else{
+            throw new Error("Out of bounds");
         }
     }
 
-    placeShip(ship: Ship, position: Position){
-        const { start, end } = position;
-
-        if(!this.isValidCell(start.x, start.y) || !this.isValidCell(end.x, end.y)){
-            throw new Error("Out of bounds");
-        }
-
-        for(let i = start.x; i <= end.x; i++){
-            for(let j = start.y; j <= end.y; j++){
+    private isValidCell(position: Position){
+        for(let i = position.start.x; i <= position.end.x; i++){
+            for(let j = position.start.y; j <= position.end.y; j++){
                 const cell = this.grid[i]?.[j];
 
                 if(cell === undefined){
@@ -56,13 +45,47 @@ class Board {
                 }
 
                 if(cell.hasShip === true){
-                    throw new Error("Overlapping ships");
+                    throw new Error("Overlapping ship");
                 }
             }
         }
-
-        this.ships.push(ship);
+        return true;
     }
+
+    placeShip(ship: Ship, position: Position){
+        const { start, end } = position;
+
+        if(this.checkBound(position)){
+            if(this.isValidCell(position)){
+                for(let i = start.x; i <= end.x; i++){
+                    for(let j = start.y; j <= end.y; j++){
+                        const cell = this.grid[i]?.[j];
+
+                        if(cell === undefined){
+                            throw new Error("Invalid board access");
+                        }
+
+                        cell.hasShip = true;
+                        this.ships.set(`${i},${j}`, ship);
+                    }
+                };
+            }else {
+                throw new Error("Invalid ship placement");
+            }
+        }else {
+            throw new Error("Invalid ship placement");
+        }
+    }
+
+    receiveAttack(coordinates: Coordinates){
+        const ship: Ship | undefined = this.ships.get(`${coordinates.x},${coordinates.y}`);
+
+        if(!ship){
+            this.missed.push(coordinates);
+        }
+
+        ship?.hit(); 
+    }        
 }
 
 export default Board;
