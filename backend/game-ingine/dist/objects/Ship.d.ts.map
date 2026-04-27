@@ -1,0 +1,1 @@
+{"version":3,"file":"Ship.d.ts","sourceRoot":"","sources":["../../src/objects/Ship.ts"],"names":[],"mappings":"AAAA,cAAM,IAAI;IACN,MAAM,EAAE,MAAM,CAAC;IACf,QAAQ,EAAE,MAAM,CAAC;IACjB,IAAI,EAAE,OAAO,CAAC;gBAEF,MAAM,EAAE,MAAM;IAM1B,GAAG;IAIH,MAAM;CAQT;AAED,eAAe,IAAI,CAAC"}
