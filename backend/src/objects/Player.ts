@@ -1,5 +1,4 @@
 import Board from "./Board.js";
-import Ship from "./Ship.js";
 
 import type { Coordinates } from "../types.js"; 
 
@@ -36,3 +35,5 @@ class Player {
         return { x, y };
     }
 }
+
+export default Player;
