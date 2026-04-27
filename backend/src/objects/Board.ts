@@ -5,13 +5,11 @@ import type { Coordinates } from "../types.js";
 
 class Board {
     grid: Cell[][];
-    size: number;
     ships: Ship[];
     missed: Set<string>;
 
-    constructor(size: 10){
-        this.size = size;
-        this.grid = this.createBoard(this.size);
+    constructor(size:number = 10){
+        this.grid = this.createBoard(size);
         this.ships = [];
         this.missed = new Set();
     }
